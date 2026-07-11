@@ -10,14 +10,6 @@ const Settings = () => {
 
   return (
     <>
-      <div className="mb-5">
-        <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--heading)' }}>
-          Settings
-        </h1>
-        <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-          Manage your account settings
-        </p>
-      </div>
 
       <div
         style={{

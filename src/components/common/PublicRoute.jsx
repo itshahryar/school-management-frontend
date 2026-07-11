@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import Loader from '../../../components/common/Loader';
+import Loader from './Loader';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isCheckingAuth } = useSelector((state) => state.auth);

@@ -11,7 +11,7 @@ import PublicRoute from './components/common/PublicRoute';
 import RoleBasedRoute from './components/common/RoleBasedRoute';
 import AppLayout from './components/layout/AppLayout';
 
-import Dashboard from './pages/Dashboard';
+import DashboardHome from './pages/DashboardHome';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
 import Unauthorized from './pages/Unauthorized';
@@ -74,7 +74,7 @@ const AppRoutes = () => (
       }
     >
       <Route index element={<Navigate to="/dashboard" replace />} />
-      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="dashboard" element={<DashboardHome />} />
       <Route path="settings" element={<Settings />} />
       <Route
         path="users"
@@ -88,7 +88,7 @@ const AppRoutes = () => (
         path="admin"
         element={
           <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
-            <Dashboard />
+            <DashboardHome />
           </RoleBasedRoute>
         }
       />

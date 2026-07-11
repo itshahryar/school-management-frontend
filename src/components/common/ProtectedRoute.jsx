@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
-import Loader from '../../../components/common/Loader';
+import Loader from './Loader';
 
 const AuthLoading = () => (
   <div
