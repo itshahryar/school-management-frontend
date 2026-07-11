@@ -87,9 +87,6 @@ const AppSidebar = () => {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold text-heading">EduCore</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  School management
-                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

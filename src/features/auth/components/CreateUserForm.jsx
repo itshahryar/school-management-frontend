@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createUser } from '@/store/slices/authSlice';
+import { usersApi } from '@/features/users/api/usersApi';
 import { createUserSchema } from '../schemas/authSchemas';
 import { ASSIGNABLE_ROLES, ROLES } from '@/constants/roles';
 import { Button } from '@/components/ui/button';
@@ -75,6 +76,7 @@ const CreateUserForm = ({ open, onOpenChange }) => {
       const userData = { ...data };
       delete userData.confirmPassword;
       await dispatch(createUser(userData)).unwrap();
+      dispatch(usersApi.util.invalidateTags([{ type: 'Users', id: 'LIST' }]));
       toast.success(`User created successfully as ${data.role}`);
       onOpenChange(false);
     } catch (err) {

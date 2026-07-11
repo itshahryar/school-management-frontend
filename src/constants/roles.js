@@ -6,6 +6,8 @@ export const ROLES = Object.freeze({
   PARENT: 'PARENT',
 });
 
+export const ROLE_VALUES = Object.freeze(Object.values(ROLES));
+
 /** Roles an owner can assign when creating users. */
 export const ASSIGNABLE_ROLES = Object.freeze([
   ROLES.ADMIN,
