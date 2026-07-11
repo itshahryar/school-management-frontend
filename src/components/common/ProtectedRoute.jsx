@@ -3,10 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import Loader from './Loader';
 
 const AuthLoading = () => (
-  <div
-    className="min-h-screen flex items-center justify-center"
-    style={{ backgroundColor: 'var(--page-background)' }}
-  >
+  <div className="flex min-h-screen items-center justify-center bg-background">
     <Loader size="lg" text="Loading..." />
   </div>
 );

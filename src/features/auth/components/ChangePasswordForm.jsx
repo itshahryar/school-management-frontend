@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDispatch, useSelector } from 'react-redux';
-import { changePassword } from '../../../store/slices/authSlice';
+import { useDispatch } from 'react-redux';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { FiLock, FiEye, FiEyeOff, FiX } from 'react-icons/fi';
-import Loader from '../../../components/common/Loader';
+import { changePassword } from '@/store/slices/authSlice';
 import { changePasswordSchema } from '../schemas/authSchemas';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-const ChangePasswordForm = ({ onClose }) => {
+const defaultValues = {
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+};
+
+const ChangePasswordForm = ({ open, onOpenChange }) => {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.auth);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -22,9 +37,26 @@ const ChangePasswordForm = ({ onClose }) => {
     reset,
   } = useForm({
     resolver: zodResolver(changePasswordSchema),
+    defaultValues,
   });
 
+  useEffect(() => {
+    if (!open) {
+      reset(defaultValues);
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
+      setIsSubmitting(false);
+    }
+  }, [open, reset]);
+
+  const handleOpenChange = (nextOpen) => {
+    if (isSubmitting) return;
+    onOpenChange(nextOpen);
+  };
+
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     try {
       await dispatch(
         changePassword({
@@ -34,151 +66,153 @@ const ChangePasswordForm = ({ onClose }) => {
         })
       ).unwrap();
       toast.success('Password changed successfully!');
-      reset();
-      onClose();
+      onOpenChange(false);
     } catch (err) {
       toast.error(err || 'Password change failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative">
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-          style={{ cursor: 'pointer' }}
-        >
-          <FiX className="h-5 w-5" />
-        </button>
-
-        <div className="mb-5">
-          <h2 className="text-xl font-bold mb-2 text-gray-900">Change Password</h2>
-          <p className="text-sm text-gray-500">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(event) => {
+          if (isSubmitting) event.preventDefault();
+        }}
+        onEscapeKeyDown={(event) => {
+          if (isSubmitting) event.preventDefault();
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle>Change Password</DialogTitle>
+          <DialogDescription>
             Enter your current password and choose a new secure password.
-          </p>
-        </div>
+          </DialogDescription>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              Current Password
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="current-password">Current Password</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
+              <Input
+                id="current-password"
                 type={showCurrentPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                className="pr-9"
+                aria-invalid={!!errors.currentPassword}
                 {...register('currentPassword')}
-                className="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="••••••••"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-1/2 right-1 -translate-y-1/2"
                 onClick={() => setShowCurrentPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                style={{ cursor: 'pointer' }}
+                aria-label={
+                  showCurrentPassword
+                    ? 'Hide current password'
+                    : 'Show current password'
+                }
               >
-                {showCurrentPassword ? (
-                  <FiEyeOff className="h-5 w-5" />
-                ) : (
-                  <FiEye className="h-5 w-5" />
-                )}
-              </button>
+                {showCurrentPassword ? <EyeOff /> : <Eye />}
+              </Button>
             </div>
-            {errors.currentPassword && (
-              <p className="mt-1 text-xs text-red-500">{errors.currentPassword.message}</p>
-            )}
+            {errors.currentPassword ? (
+              <p className="text-xs text-destructive">
+                {errors.currentPassword.message}
+              </p>
+            ) : null}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">New Password</label>
+          <div className="space-y-2">
+            <Label htmlFor="new-password">New Password</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
+              <Input
+                id="new-password"
                 type={showNewPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                className="pr-9"
+                aria-invalid={!!errors.newPassword}
                 {...register('newPassword')}
-                className="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="••••••••"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-1/2 right-1 -translate-y-1/2"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                style={{ cursor: 'pointer' }}
+                aria-label={
+                  showNewPassword ? 'Hide new password' : 'Show new password'
+                }
               >
-                {showNewPassword ? (
-                  <FiEyeOff className="h-5 w-5" />
-                ) : (
-                  <FiEye className="h-5 w-5" />
-                )}
-              </button>
+                {showNewPassword ? <EyeOff /> : <Eye />}
+              </Button>
             </div>
-            {errors.newPassword && (
-              <p className="mt-1 text-xs text-red-500">{errors.newPassword.message}</p>
-            )}
+            {errors.newPassword ? (
+              <p className="text-xs text-destructive">
+                {errors.newPassword.message}
+              </p>
+            ) : null}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              Confirm New Password
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-new-password">Confirm New Password</Label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
+              <Input
+                id="confirm-new-password"
                 type={showConfirmPassword ? 'text' : 'password'}
-                {...register('confirmPassword')}
-                className="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 placeholder="••••••••"
+                className="pr-9"
+                aria-invalid={!!errors.confirmPassword}
+                {...register('confirmPassword')}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-1/2 right-1 -translate-y-1/2"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                style={{ cursor: 'pointer' }}
+                aria-label={
+                  showConfirmPassword
+                    ? 'Hide confirm password'
+                    : 'Show confirm password'
+                }
               >
-                {showConfirmPassword ? (
-                  <FiEyeOff className="h-5 w-5" />
-                ) : (
-                  <FiEye className="h-5 w-5" />
-                )}
-              </button>
+                {showConfirmPassword ? <EyeOff /> : <Eye />}
+              </Button>
             </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>
-            )}
+            {errors.confirmPassword ? (
+              <p className="text-xs text-destructive">
+                {errors.confirmPassword.message}
+              </p>
+            ) : null}
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
+          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+            <Button
               type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
-              style={{ cursor: 'pointer' }}
+              variant="outline"
+              disabled={isSubmitting}
+              onClick={() => handleOpenChange(false)}
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 py-3 px-4 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <Loader size="sm" text="Changing..." />
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Changing...
+                </>
               ) : (
                 'Change Password'
               )}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -1,35 +1,35 @@
 import { Link } from 'react-router-dom';
+import { ShieldAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
-const Unauthorized = () => {
-  return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{ backgroundColor: 'var(--page-background)' }}
-    >
-      <div
-        className="max-w-md w-full p-8 text-center"
-        style={{
-          backgroundColor: 'var(--card-background)',
-          borderRadius: '12px',
-          border: '1px solid var(--border)',
-        }}
-      >
-        <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--heading)' }}>
-          Access Denied
-        </h1>
-        <p className="mb-6 text-sm" style={{ color: 'var(--muted-text)' }}>
+const Unauthorized = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <Card className="w-full max-w-md text-center">
+      <CardHeader className="items-center">
+        <div className="mb-2 flex size-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+          <ShieldAlert className="size-5" />
+        </div>
+        <CardTitle className="text-xl text-heading">Access Denied</CardTitle>
+        <CardDescription>
           You do not have permission to view this page.
-        </p>
-        <Link
-          to="/dashboard"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium"
-          style={{ backgroundColor: 'var(--primary)', color: 'var(--text-inverse)' }}
-        >
-          Back to Dashboard
-        </Link>
-      </div>
-    </div>
-  );
-};
+        </CardDescription>
+      </CardHeader>
+      <CardContent />
+      <CardFooter className="justify-center border-0 bg-transparent">
+        <Button asChild>
+          <Link to="/dashboard">Back to Dashboard</Link>
+        </Button>
+      </CardFooter>
+    </Card>
+  </div>
+);
 
 export default Unauthorized;

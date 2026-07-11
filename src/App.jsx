@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Provider, useDispatch } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import store from './store/store';
-import { getCurrentUser } from './store/slices/authSlice';
+import { clearSession, getCurrentUser } from './store/slices/authSlice';
 import { ROLES } from './constants/roles';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -29,6 +30,25 @@ const AuthBootstrap = ({ children }) => {
   }, [dispatch]);
 
   return children;
+};
+
+const AuthUnauthorizedListener = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      dispatch(clearSession());
+      navigate('/login', { replace: true });
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    };
+  }, [dispatch, navigate]);
+
+  return null;
 };
 
 const AppRoutes = () => (
@@ -103,10 +123,13 @@ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-        <AuthBootstrap>
-          <AppRoutes />
-        </AuthBootstrap>
+        <TooltipProvider>
+          <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+          <AuthBootstrap>
+            <AuthUnauthorizedListener />
+            <AppRoutes />
+          </AuthBootstrap>
+        </TooltipProvider>
       </BrowserRouter>
     </Provider>
   );

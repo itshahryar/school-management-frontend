@@ -3,6 +3,8 @@ import { AUTH_PUBLIC_PATHS } from '../constants/roles';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+let unauthorizedRedirectQueued = false;
+
 const axiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -21,9 +23,20 @@ axiosInstance.interceptors.response.use(
       window.location.pathname.startsWith(path)
     );
 
-    // Session restore failures are handled by the auth slice — do not hard redirect.
-    if (status === 401 && !isAuthCheck && !isPublicPath) {
-      window.location.assign('/login');
+    // Soft-redirect on expired sessions to avoid a full document reload
+    // (which feels like a page refresh when closing dialogs / submitting forms).
+    if (
+      status === 401 &&
+      !isAuthCheck &&
+      !isPublicPath &&
+      !unauthorizedRedirectQueued
+    ) {
+      unauthorizedRedirectQueued = true;
+      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+      // Allow another redirect after the next full navigation cycle.
+      setTimeout(() => {
+        unauthorizedRedirectQueued = false;
+      }, 1000);
     }
 
     return Promise.reject(error);

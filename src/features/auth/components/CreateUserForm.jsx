@@ -1,251 +1,295 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUser } from '../../../store/slices/authSlice';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiX } from 'react-icons/fi';
-import Loader from '../../../components/common/Loader';
+import { createUser } from '@/store/slices/authSlice';
 import { createUserSchema } from '../schemas/authSchemas';
-import { ASSIGNABLE_ROLES, ROLES } from '../../../constants/roles';
+import { ASSIGNABLE_ROLES, ROLES } from '@/constants/roles';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const CreateUserForm = ({ onClose }) => {
+const defaultValues = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: ASSIGNABLE_ROLES[0],
+  password: '',
+  confirmPassword: '',
+};
+
+const CreateUserForm = ({ open, onOpenChange }) => {
   const dispatch = useDispatch();
-  const { user: currentUser, isLoading } = useSelector((state) => state.auth);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canCreate = currentUser?.role === ROLES.OWNER;
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm({
     resolver: zodResolver(createUserSchema),
-    defaultValues: { role: ASSIGNABLE_ROLES[0] },
+    defaultValues,
   });
 
+  useEffect(() => {
+    if (!open) {
+      reset(defaultValues);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+      setIsSubmitting(false);
+    }
+  }, [open, reset]);
+
+  const handleOpenChange = (nextOpen) => {
+    if (isSubmitting) return;
+    onOpenChange(nextOpen);
+  };
+
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     try {
       const userData = { ...data };
       delete userData.confirmPassword;
       await dispatch(createUser(userData)).unwrap();
       toast.success(`User created successfully as ${data.role}`);
-      reset();
-      onClose();
+      onOpenChange(false);
     } catch (err) {
       toast.error(err || 'Failed to create user');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (!canCreate) {
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center relative">
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            style={{ cursor: 'pointer' }}
-          >
-            <FiX className="h-6 w-6" />
-          </button>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-          <p className="text-gray-600 mb-6">
-            Only the owner can create users with specific roles.
-          </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition"
-            style={{ cursor: 'pointer' }}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative max-h-[90vh] overflow-y-auto">
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-          style={{ cursor: 'pointer' }}
-        >
-          <FiX className="h-6 w-6" />
-        </button>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(event) => {
+          if (isSubmitting) event.preventDefault();
+        }}
+        onEscapeKeyDown={(event) => {
+          if (isSubmitting) event.preventDefault();
+        }}
+      >
+        {canCreate ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Create New User</DialogTitle>
+              <DialogDescription>
+                Create a new user account and assign a role.
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Create New User</h2>
-          <p className="text-gray-600">Create a new user and assign a role.</p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiUser className="h-5 w-5 text-gray-400" />
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4"
+              noValidate
+            >
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="create-first-name">First Name</Label>
+                  <Input
+                    id="create-first-name"
+                    placeholder="John"
+                    aria-invalid={!!errors.firstName}
+                    {...register('firstName')}
+                  />
+                  {errors.firstName ? (
+                    <p className="text-xs text-destructive">
+                      {errors.firstName.message}
+                    </p>
+                  ) : null}
                 </div>
-                <input
-                  type="text"
-                  {...register('firstName')}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                  placeholder="John"
-                />
-              </div>
-              {errors.firstName && (
-                <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiUser className="h-5 w-5 text-gray-400" />
+                <div className="space-y-2">
+                  <Label htmlFor="create-last-name">Last Name</Label>
+                  <Input
+                    id="create-last-name"
+                    placeholder="Doe"
+                    aria-invalid={!!errors.lastName}
+                    {...register('lastName')}
+                  />
+                  {errors.lastName ? (
+                    <p className="text-xs text-destructive">
+                      {errors.lastName.message}
+                    </p>
+                  ) : null}
                 </div>
-                <input
-                  type="text"
-                  {...register('lastName')}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                  placeholder="Doe"
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="create-email">Email Address</Label>
+                <Input
+                  id="create-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  aria-invalid={!!errors.email}
+                  {...register('email')}
                 />
+                {errors.email ? (
+                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                ) : null}
               </div>
-              {errors.lastName && (
-                <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-              )}
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiMail className="h-5 w-5 text-gray-400" />
+              <div className="space-y-2">
+                <Label htmlFor="create-role">Role</Label>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="create-role"
+                        className="w-full"
+                        aria-invalid={!!errors.role}
+                      >
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ASSIGNABLE_ROLES.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.role ? (
+                  <p className="text-xs text-destructive">{errors.role.message}</p>
+                ) : null}
               </div>
-              <input
-                type="email"
-                {...register('email')}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="you@example.com"
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-            <select
-              {...register('role')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-            >
-              {ASSIGNABLE_ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-            {errors.role && (
-              <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-400" />
+              <div className="space-y-2">
+                <Label htmlFor="create-password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="create-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    className="pr-9"
+                    aria-invalid={!!errors.password}
+                    {...register('password')}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="absolute top-1/2 right-1 -translate-y-1/2"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </Button>
+                </div>
+                {errors.password ? (
+                  <p className="text-xs text-destructive">
+                    {errors.password.message}
+                  </p>
+                ) : null}
               </div>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                {...register('password')}
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                style={{ cursor: 'pointer' }}
-              >
-                {showPassword ? (
-                  <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                ) : (
-                  <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                )}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiLock className="h-5 w-5 text-gray-400" />
+              <div className="space-y-2">
+                <Label htmlFor="create-confirm-password">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    id="create-confirm-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    className="pr-9"
+                    aria-invalid={!!errors.confirmPassword}
+                    {...register('confirmPassword')}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="absolute top-1/2 right-1 -translate-y-1/2"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    aria-label={
+                      showConfirmPassword
+                        ? 'Hide confirm password'
+                        : 'Show confirm password'
+                    }
+                  >
+                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                  </Button>
+                </div>
+                {errors.confirmPassword ? (
+                  <p className="text-xs text-destructive">
+                    {errors.confirmPassword.message}
+                  </p>
+                ) : null}
               </div>
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                {...register('confirmPassword')}
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                style={{ cursor: 'pointer' }}
-              >
-                {showConfirmPassword ? (
-                  <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                ) : (
-                  <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                )}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
-            )}
-          </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition"
-              style={{ cursor: 'pointer' }}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <Loader size="md" text="Creating..." />
-              ) : (
-                'Create User'
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isSubmitting}
+                  onClick={() => handleOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create User'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>Access Denied</DialogTitle>
+              <DialogDescription>
+                Only the owner can create users with specific roles.
+              </DialogDescription>
+            </DialogHeader>
+            <Alert>
+              <AlertTitle>Insufficient permissions</AlertTitle>
+              <AlertDescription>
+                Ask an owner to create accounts or update your role.
+              </AlertDescription>
+            </Alert>
+            <div className="flex justify-end pt-2">
+              <Button type="button" onClick={() => handleOpenChange(false)}>
+                Close
+              </Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 
