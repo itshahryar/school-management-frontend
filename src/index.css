@@ -181,6 +181,12 @@
   }
 }
 
+/* Reduce sidebar width */
+:root {
+  --sidebar-width: 220px;
+  --sidebar-width-icon: 60px;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
