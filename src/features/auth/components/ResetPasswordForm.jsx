@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { resetPassword } from '../../../store/slices/authSlice';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiLock, FiEye, FiEyeOff, FiLoader, FiCheckCircle } from 'react-icons/fi';
+import { FiLock, FiEye, FiEyeOff, FiCheckCircle } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { resetPasswordSchema } from '../schemas/authSchemas';
 
 const ResetPasswordForm = () => {
@@ -223,10 +224,7 @@ const ResetPasswordForm = () => {
             }}
           >
             {isLoading ? (
-              <>
-                <FiLoader className="h-5 w-5 animate-spin" />
-                Resetting...
-              </>
+              <Loader size="md" text="Resetting..." />
             ) : (
               'Reset Password'
             )}

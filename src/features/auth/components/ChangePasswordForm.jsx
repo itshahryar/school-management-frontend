@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDispatch, useSelector } from 'react-redux';
 import { changePassword } from '../../../store/slices/authSlice';
 import toast from 'react-hot-toast';
-import { FiLock, FiEye, FiEyeOff, FiLoader, FiX } from 'react-icons/fi';
+import { FiLock, FiEye, FiEyeOff, FiX } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { changePasswordSchema } from '../schemas/authSchemas';
 
 const ChangePasswordForm = ({ onClose }) => {
@@ -169,10 +170,7 @@ const ChangePasswordForm = ({ onClose }) => {
               className="flex-1 py-3 px-4 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <>
-                  <FiLoader className="h-4 w-4 animate-spin" />
-                  Changing...
-                </>
+                <Loader size="sm" text="Changing..." />
               ) : (
                 'Change Password'
               )}

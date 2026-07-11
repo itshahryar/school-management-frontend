@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { forgotPassword } from '../../../store/slices/authSlice';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiMail, FiArrowLeft, FiLoader, FiCheckCircle } from 'react-icons/fi';
+import { FiMail, FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { forgotPasswordSchema } from '../schemas/authSchemas';
 
 const ForgotPasswordForm = () => {
@@ -151,10 +152,7 @@ const ForgotPasswordForm = () => {
             }}
           >
             {isLoading ? (
-              <>
-                <FiLoader className="h-5 w-5 animate-spin" />
-                Sending...
-              </>
+              <Loader size="md" text="Sending..." />
             ) : (
               'Send Reset Link'
             )}

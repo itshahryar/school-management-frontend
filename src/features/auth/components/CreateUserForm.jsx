@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser } from '../../../store/slices/authSlice';
 import toast from 'react-hot-toast';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiLoader, FiX } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiX } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { createUserSchema } from '../schemas/authSchemas';
 import { ASSIGNABLE_ROLES, ROLES } from '../../../constants/roles';
 
@@ -236,10 +237,7 @@ const CreateUserForm = ({ onClose }) => {
               className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <>
-                  <FiLoader className="h-5 w-5 animate-spin" />
-                  Creating...
-                </>
+                <Loader size="md" text="Creating..." />
               ) : (
                 'Create User'
               )}

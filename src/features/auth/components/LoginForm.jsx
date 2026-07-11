@@ -10,11 +10,11 @@ import {
   FiLock,
   FiEye,
   FiEyeOff,
-  FiLoader,
   FiShield,
   FiArrowRight,
   FiCheckCircle,
 } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { loginSchema } from '../schemas/authSchemas';
 
 const features = [
@@ -330,10 +330,7 @@ const LoginForm = () => {
                       )}
 
                       {isLoading ? (
-                        <>
-                          <FiLoader className="w-4 h-4 animate-spin" />
-                          <span>Signing in…</span>
-                        </>
+                        <Loader size="sm" text="Signing in…" />
                       ) : (
                         <>
                           <span>Sign In</span>

@@ -1,19 +1,13 @@
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
-import { FiLoader } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 
 const AuthLoading = () => (
   <div
     className="min-h-screen flex items-center justify-center"
     style={{ backgroundColor: 'var(--page-background)' }}
   >
-    <div className="text-center">
-      <FiLoader
-        className="h-10 w-10 animate-spin mx-auto mb-3"
-        style={{ color: 'var(--primary)' }}
-      />
-      <p style={{ color: 'var(--muted-text)' }}>Loading...</p>
-    </div>
+    <Loader size="lg" text="Loading..." />
   </div>
 );
 

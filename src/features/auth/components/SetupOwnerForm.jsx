@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setupOwner } from '../../../store/slices/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiEye, FiEyeOff, FiLoader, FiShield, FiArrowLeft } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiShield, FiArrowLeft } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { setupOwnerSchema } from '../schemas/authSchemas';
 
 const SetupOwnerForm = () => {
@@ -204,10 +205,7 @@ const SetupOwnerForm = () => {
             }}
           >
             {isLoading ? (
-              <>
-                <FiLoader className="h-4 w-4 animate-spin" />
-                Creating...
-              </>
+              <Loader size="sm" text="Creating..." />
             ) : (
               'Create Owner Account'
             )}
