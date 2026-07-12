@@ -103,7 +103,7 @@ const AppRoutes = () => (
       <Route
         path="classes"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <Classes />
           </RoleBasedRoute>
         }
@@ -111,7 +111,7 @@ const AppRoutes = () => (
       <Route
         path="classes/:classId/subjects"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <ClassSubjects />
           </RoleBasedRoute>
         }
@@ -119,7 +119,7 @@ const AppRoutes = () => (
       <Route
         path="classes/:classId/subjects/:subjectId/content"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <SubjectContent />
           </RoleBasedRoute>
         }
@@ -127,7 +127,7 @@ const AppRoutes = () => (
       <Route
         path="classes/:classId/subjects/:subjectId/content/:nodeId/questions"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <NodeQuestions />
           </RoleBasedRoute>
         }

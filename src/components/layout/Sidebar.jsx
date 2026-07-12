@@ -46,7 +46,7 @@ const AppSidebar = () => {
         icon: LayoutDashboard,
         path: '/dashboard',
       },
-      ...([ROLES.OWNER, ROLES.ADMIN].includes(user?.role)
+      ...(user?.role === ROLES.OWNER
         ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]
         : []),
       ...(user?.role === ROLES.OWNER
