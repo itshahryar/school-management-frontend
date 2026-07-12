@@ -20,9 +20,31 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
+  '/classes': 'Classes',
   '/users': 'Users',
   '/settings': 'Settings',
   '/admin': 'Admin',
+};
+
+const resolvePageTitle = (pathname) => {
+  if (
+    pathname.match(
+      /^\/classes\/[^/]+\/subjects\/[^/]+\/content\/[^/]+\/questions/
+    )
+  ) {
+    return 'Questions';
+  }
+  if (pathname.match(/^\/classes\/[^/]+\/subjects\/[^/]+\/content/)) {
+    return 'Content';
+  }
+  if (pathname.match(/^\/classes\/[^/]+\/subjects/)) return 'Subjects';
+  return (
+    PAGE_TITLES[pathname] ||
+    Object.entries(PAGE_TITLES).find(([path]) =>
+      pathname.startsWith(path)
+    )?.[1] ||
+    'Dashboard'
+  );
 };
 
 const Header = () => {
@@ -31,12 +53,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const pageTitle =
-    PAGE_TITLES[location.pathname] ||
-    Object.entries(PAGE_TITLES).find(([path]) =>
-      location.pathname.startsWith(path)
-    )?.[1] ||
-    'Dashboard';
+  const pageTitle = resolvePageTitle(location.pathname);
 
   const handleLogout = async () => {
     try {

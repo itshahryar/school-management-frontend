@@ -4,6 +4,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   GraduationCap,
   LayoutDashboard,
+  Layers,
   LogOut,
   Settings,
   Users,
@@ -45,6 +46,9 @@ const AppSidebar = () => {
         icon: LayoutDashboard,
         path: '/dashboard',
       },
+      ...([ROLES.OWNER, ROLES.ADMIN].includes(user?.role)
+        ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]
+        : []),
       ...(user?.role === ROLES.OWNER
         ? [{ id: 'users', label: 'Users', icon: Users, path: '/users' }]
         : []),

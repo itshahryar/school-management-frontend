@@ -15,6 +15,10 @@ import AppLayout from './components/layout/AppLayout';
 import DashboardHome from './pages/DashboardHome';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
+import Classes from './pages/Classes';
+import ClassSubjects from './pages/ClassSubjects';
+import SubjectContent from './pages/SubjectContent';
+import NodeQuestions from './pages/NodeQuestions';
 import Unauthorized from './pages/Unauthorized';
 
 import LoginForm from './features/auth/components/LoginForm';
@@ -96,6 +100,38 @@ const AppRoutes = () => (
       <Route index element={<Navigate to="/dashboard" replace />} />
       <Route path="dashboard" element={<DashboardHome />} />
       <Route path="settings" element={<Settings />} />
+      <Route
+        path="classes"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+            <Classes />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="classes/:classId/subjects"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+            <ClassSubjects />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="classes/:classId/subjects/:subjectId/content"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+            <SubjectContent />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="classes/:classId/subjects/:subjectId/content/:nodeId/questions"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
+            <NodeQuestions />
+          </RoleBasedRoute>
+        }
+      />
       <Route
         path="users"
         element={
