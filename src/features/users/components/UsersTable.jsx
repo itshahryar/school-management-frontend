@@ -1,4 +1,4 @@
-import { AlertCircle, UsersRound } from 'lucide-react';
+import { AlertCircle, Pencil, UsersRound } from 'lucide-react';
 import EmptyState from '@/components/common/EmptyState';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,7 @@ const UsersTable = ({
   errorMessage,
   onRetry,
   onCreateUser,
+  onEditUser,
   hasActiveFilters,
 }) => {
   if (isLoading) {
@@ -95,7 +96,8 @@ const UsersTable = ({
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="hidden sm:table-cell">Email</TableHead>
-          <TableHead className="pr-4">Joined</TableHead>
+          <TableHead className="hidden md:table-cell">Joined</TableHead>
+          <TableHead className="pr-4 text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -131,8 +133,19 @@ const UsersTable = ({
             <TableCell className="hidden text-muted-foreground sm:table-cell">
               {user.email}
             </TableCell>
-            <TableCell className="pr-4 text-muted-foreground">
+            <TableCell className="hidden text-muted-foreground md:table-cell">
               {formatDate(user.createdAt)}
+            </TableCell>
+            <TableCell className="pr-4 text-right">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onEditUser?.(user)}
+              >
+                <Pencil />
+                Edit
+              </Button>
             </TableCell>
           </TableRow>
         ))}

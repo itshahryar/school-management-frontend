@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { logout } from '@/store/slices/authSlice';
-import { ROLES } from '@/constants/roles';
+import { ROLES, getDashboardPath } from '@/constants/roles';
 import { getDisplayName, getInitials } from '@/utils/user';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -45,7 +45,7 @@ const AppSidebar = () => {
         id: 'dashboard',
         label: 'Dashboard',
         icon: LayoutDashboard,
-        path: user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin',
+        path: getDashboardPath(user?.role),
       },
       ...(user?.role === ROLES.OWNER
         ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]

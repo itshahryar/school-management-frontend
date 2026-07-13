@@ -14,3 +14,7 @@ export const AUTH_PUBLIC_PATHS = Object.freeze([
   '/reset-password',
   '/setup',
 ]);
+
+/** Role → home dashboard path */
+export const getDashboardPath = (role) =>
+  role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin';

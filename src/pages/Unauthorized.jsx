@@ -10,11 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ROLES } from '@/constants/roles';
+import { getDashboardPath } from '@/constants/roles';
 
 const Unauthorized = () => {
   const { user } = useSelector((state) => state.auth);
-  const dashboardPath = user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin';
+  const dashboardPath = getDashboardPath(user?.role);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import store from './store/store';
 import { clearSession, getCurrentUser } from './store/slices/authSlice';
-import { ROLES } from './constants/roles';
+import { ROLES, getDashboardPath } from './constants/roles';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
@@ -64,8 +64,7 @@ const AuthUnauthorizedListener = () => {
 
 const DashboardRedirect = () => {
   const { user } = useSelector((state) => state.auth);
-  const redirectPath = user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin';
-  return <Navigate to={redirectPath} replace />;
+  return <Navigate to={getDashboardPath(user?.role)} replace />;
 };
 
 const AppRoutes = () => (
@@ -120,6 +119,7 @@ const AppRoutes = () => (
       }
     >
       <Route index element={<DashboardRedirect />} />
+      <Route path="dashboard" element={<DashboardRedirect />} />
       <Route
         path="dashboard/owner"
         element={

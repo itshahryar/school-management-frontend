@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PageHeader from '@/components/common/PageHeader';
-import { ROLES } from '@/constants/roles';
+import { getDashboardPath } from '@/constants/roles';
 
 const NotFound = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const dashboardPath = user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin';
+  const dashboardPath = getDashboardPath(user?.role);
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center space-y-6">

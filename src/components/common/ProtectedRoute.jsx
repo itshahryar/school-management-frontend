@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
+import { getDashboardPath } from '@/constants/roles';
 import Loader from './Loader';
 
 const AuthLoading = () => (
@@ -27,7 +28,7 @@ const ProtectedRoute = ({ children, allowInactive = false }) => {
   }
 
   if (user?.isActive && allowInactive) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={getDashboardPath(user?.role)} replace />;
   }
 
   return children;

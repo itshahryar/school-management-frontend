@@ -19,15 +19,16 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const PAGE_TITLES = {
-  '/dashboard': 'Dashboard',
+  '/dashboard/owner': 'Dashboard',
+  '/dashboard/admin': 'Dashboard',
   '/classes': 'Classes',
   '/papers': 'Question Papers',
   '/users': 'Users',
   '/settings': 'Settings',
-  '/admin': 'Admin',
 };
 
 const resolvePageTitle = (pathname) => {
+  if (pathname.startsWith('/dashboard')) return 'Dashboard';
   if (pathname === '/papers/generate') return 'Build Paper';
   if (pathname.match(/^\/papers\/[^/]+\/edit$/)) return 'Edit Paper';
   if (pathname.match(/^\/papers\/[^/]+$/)) return 'Question Paper';

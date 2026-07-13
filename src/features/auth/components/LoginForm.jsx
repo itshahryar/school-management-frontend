@@ -15,6 +15,7 @@ import {
   FiCheckCircle,
 } from 'react-icons/fi';
 import Loader from '../../../components/common/Loader';
+import { getDashboardPath } from '@/constants/roles';
 import { loginSchema } from '../schemas/authSchemas';
 
 const features = [
@@ -48,7 +49,9 @@ const LoginForm = () => {
           : 'Welcome back!'
       );
       navigate(
-        loggedInUser?.isActive === false ? '/account-inactive' : '/dashboard'
+        loggedInUser?.isActive === false
+          ? '/account-inactive'
+          : getDashboardPath(loggedInUser?.role)
       );
     } catch (err) {
       toast.error(err || 'Login failed');

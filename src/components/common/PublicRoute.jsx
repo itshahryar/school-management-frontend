@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import { getDashboardPath } from '@/constants/roles';
 import Loader from './Loader';
 
 const PublicRoute = ({ children }) => {
@@ -22,7 +23,7 @@ const PublicRoute = ({ children }) => {
     if (!user?.isActive) {
       return <Navigate to="/account-inactive" replace />;
     }
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={getDashboardPath(user?.role)} replace />;
   }
 
   return children;
