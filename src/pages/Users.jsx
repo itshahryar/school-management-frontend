@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import CreateUserForm from '@/features/auth/components/CreateUserForm';
+import EditUserForm from '@/features/users/components/EditUserForm';
 import UsersPagination from '@/features/users/components/UsersPagination';
 import UsersTable from '@/features/users/components/UsersTable';
 import UsersToolbar from '@/features/users/components/UsersToolbar';
@@ -14,6 +15,7 @@ const PAGE_SIZE = 10;
 
 const Users = () => {
   const [showCreateUser, setShowCreateUser] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('');
@@ -75,7 +77,11 @@ const Users = () => {
           />
         </div>
 
-        <div className={isFetching && !isLoading ? 'opacity-70 transition-opacity' : ''}>
+        <div
+          className={
+            isFetching && !isLoading ? 'opacity-70 transition-opacity' : ''
+          }
+        >
           <UsersTable
             users={users}
             isLoading={isLoading}
@@ -83,6 +89,7 @@ const Users = () => {
             errorMessage={errorMessage}
             onRetry={refetch}
             onCreateUser={() => setShowCreateUser(true)}
+            onEditUser={setEditingUser}
             hasActiveFilters={hasActiveFilters}
           />
         </div>
@@ -97,6 +104,14 @@ const Users = () => {
       <CreateUserForm
         open={showCreateUser}
         onOpenChange={setShowCreateUser}
+      />
+
+      <EditUserForm
+        open={Boolean(editingUser)}
+        onOpenChange={(open) => {
+          if (!open) setEditingUser(null);
+        }}
+        userItem={editingUser}
       />
     </div>
   );

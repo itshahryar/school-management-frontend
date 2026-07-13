@@ -54,6 +54,45 @@ export const createUserSchema = z
     path: ['confirmPassword'],
   });
 
+export const updateUserSchema = z
+  .object({
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    email: z.string().email('Please enter a valid email address'),
+    role: z.enum(['ADMIN']).optional(),
+    isActive: z.boolean(),
+    password: z.string().optional().or(z.literal('')),
+    confirmPassword: z.string().optional().or(z.literal('')),
+  })
+  .superRefine((data, ctx) => {
+    const password = data.password?.trim() || '';
+    const confirm = data.confirmPassword?.trim() || '';
+
+    if (!password && !confirm) return;
+
+    if (password.length < 8) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Password must be at least 8 characters',
+        path: ['password'],
+      });
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Password must contain uppercase, lowercase, and number',
+        path: ['password'],
+      });
+    }
+
+    if (password !== confirm) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
+
 export const setupOwnerSchema = z
   .object({
     firstName: z.string().min(2, 'First name must be at least 2 characters'),

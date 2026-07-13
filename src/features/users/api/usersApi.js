@@ -33,7 +33,20 @@ export const usersApi = baseApi.injectEndpoints({
             ]
           : [{ type: 'Users', id: 'LIST' }],
     }),
+
+    updateUser: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/auth/users/${id}`,
+        method: 'PATCH',
+        data: body,
+      }),
+      transformResponse: (response) => response.data.user,
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Users', id },
+        { type: 'Users', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
-export const { useGetUsersQuery } = usersApi;
+export const { useGetUsersQuery, useUpdateUserMutation } = usersApi;

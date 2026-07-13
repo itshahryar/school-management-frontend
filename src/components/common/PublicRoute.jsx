@@ -3,7 +3,9 @@ import { Navigate } from 'react-router-dom';
 import Loader from './Loader';
 
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, isCheckingAuth } = useSelector((state) => state.auth);
+  const { isAuthenticated, isCheckingAuth, user } = useSelector(
+    (state) => state.auth
+  );
 
   if (isCheckingAuth) {
     return (
@@ -17,6 +19,9 @@ const PublicRoute = ({ children }) => {
   }
 
   if (isAuthenticated) {
+    if (!user?.isActive) {
+      return <Navigate to="/account-inactive" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 

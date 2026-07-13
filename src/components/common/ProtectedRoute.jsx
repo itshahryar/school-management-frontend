@@ -8,8 +8,10 @@ const AuthLoading = () => (
   </div>
 );
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isCheckingAuth } = useSelector((state) => state.auth);
+const ProtectedRoute = ({ children, allowInactive = false }) => {
+  const { isAuthenticated, isCheckingAuth, user } = useSelector(
+    (state) => state.auth
+  );
   const location = useLocation();
 
   if (isCheckingAuth) {
@@ -18,6 +20,14 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!user?.isActive && !allowInactive) {
+    return <Navigate to="/account-inactive" replace />;
+  }
+
+  if (user?.isActive && allowInactive) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

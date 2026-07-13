@@ -40,9 +40,16 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(login(data)).unwrap();
-      toast.success('Welcome back!');
-      navigate('/dashboard');
+      const result = await dispatch(login(data)).unwrap();
+      const loggedInUser = result?.data?.user;
+      toast.success(
+        loggedInUser?.isActive === false
+          ? 'Signed in — account is inactive'
+          : 'Welcome back!'
+      );
+      navigate(
+        loggedInUser?.isActive === false ? '/account-inactive' : '/dashboard'
+      );
     } catch (err) {
       toast.error(err || 'Login failed');
     }

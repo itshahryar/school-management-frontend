@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import store from './store/store';
@@ -24,6 +24,7 @@ import QuestionPapers from './pages/QuestionPapers';
 import GenerateQuestionPaper from './pages/GenerateQuestionPaper';
 import EditQuestionPaper from './pages/EditQuestionPaper';
 import QuestionPaperDetail from './pages/QuestionPaperDetail';
+import InactiveAccount from './pages/InactiveAccount';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 
@@ -99,6 +100,15 @@ const AppRoutes = () => (
         <PublicRoute>
           <SetupOwnerForm />
         </PublicRoute>
+      }
+    />
+
+    <Route
+      path="/account-inactive"
+      element={
+        <ProtectedRoute allowInactive>
+          <InactiveAccount />
+        </ProtectedRoute>
       }
     />
 
