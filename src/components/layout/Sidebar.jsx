@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
+  FileStack,
   GraduationCap,
   LayoutDashboard,
   Layers,
@@ -50,6 +51,16 @@ const AppSidebar = () => {
         ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]
         : []),
       ...(user?.role === ROLES.OWNER
+        ? [
+            {
+              id: 'papers',
+              label: 'Question Papers',
+              icon: FileStack,
+              path: '/papers',
+            },
+          ]
+        : []),
+      ...(user?.role === ROLES.OWNER
         ? [{ id: 'users', label: 'Users', icon: Users, path: '/users' }]
         : []),
       {
@@ -77,7 +88,7 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="inset" className="print:hidden">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

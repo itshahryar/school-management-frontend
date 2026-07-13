@@ -19,6 +19,10 @@ import Classes from './pages/Classes';
 import ClassSubjects from './pages/ClassSubjects';
 import SubjectContent from './pages/SubjectContent';
 import NodeQuestions from './pages/NodeQuestions';
+import QuestionPapers from './pages/QuestionPapers';
+import GenerateQuestionPaper from './pages/GenerateQuestionPaper';
+import EditQuestionPaper from './pages/EditQuestionPaper';
+import QuestionPaperDetail from './pages/QuestionPaperDetail';
 import Unauthorized from './pages/Unauthorized';
 
 import LoginForm from './features/auth/components/LoginForm';
@@ -129,6 +133,38 @@ const AppRoutes = () => (
         element={
           <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <NodeQuestions />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="papers"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <QuestionPapers />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="papers/generate"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <GenerateQuestionPaper />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="papers/:paperId/edit"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <EditQuestionPaper />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="papers/:paperId"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <QuestionPaperDetail />
           </RoleBasedRoute>
         }
       />

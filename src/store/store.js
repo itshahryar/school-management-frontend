@@ -6,6 +6,8 @@ import '@/features/classes/api/classesApi';
 import '@/features/subjects/api/subjectsApi';
 import '@/features/contentNodes/api/contentNodesApi';
 import '@/features/questions/api/questionsApi';
+import '@/features/tests/api/testsApi';
+import '@/features/tests/api/testMetaApi';
 
 const store = configureStore({
   reducer: {

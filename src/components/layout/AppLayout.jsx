@@ -7,8 +7,10 @@ const AppLayout = () => (
   <SidebarProvider>
     <AppSidebar />
     <SidebarInset>
-      <Header />
-      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+      <div className="print:hidden">
+        <Header />
+      </div>
+      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-6 print:gap-0 print:p-0">
         <Outlet />
       </div>
     </SidebarInset>

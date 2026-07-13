@@ -21,12 +21,16 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 const PAGE_TITLES = {
   '/dashboard': 'Dashboard',
   '/classes': 'Classes',
+  '/papers': 'Question Papers',
   '/users': 'Users',
   '/settings': 'Settings',
   '/admin': 'Admin',
 };
 
 const resolvePageTitle = (pathname) => {
+  if (pathname === '/papers/generate') return 'Build Paper';
+  if (pathname.match(/^\/papers\/[^/]+\/edit$/)) return 'Edit Paper';
+  if (pathname.match(/^\/papers\/[^/]+$/)) return 'Question Paper';
   if (
     pathname.match(
       /^\/classes\/[^/]+\/subjects\/[^/]+\/content\/[^/]+\/questions/
