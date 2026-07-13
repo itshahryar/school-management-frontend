@@ -50,7 +50,7 @@ const AppSidebar = () => {
       ...(user?.role === ROLES.OWNER
         ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]
         : []),
-      ...(user?.role === ROLES.OWNER
+      ...(user?.role === ROLES.OWNER || user?.role === ROLES.ADMIN
         ? [
             {
               id: 'papers',

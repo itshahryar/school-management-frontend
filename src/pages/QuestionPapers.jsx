@@ -75,7 +75,7 @@ const QuestionPapers = () => {
     <div className="space-y-6">
       <PageHeader
         title="Question Papers"
-        description="Build and manage question papers from your class question banks."
+        description="Build and manage your question papers from the class question banks."
         actions={
           <Button asChild>
             <Link to="/papers/generate">

@@ -139,7 +139,7 @@ const AppRoutes = () => (
       <Route
         path="papers"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
             <QuestionPapers />
           </RoleBasedRoute>
         }
@@ -147,7 +147,7 @@ const AppRoutes = () => (
       <Route
         path="papers/generate"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
             <GenerateQuestionPaper />
           </RoleBasedRoute>
         }
@@ -155,7 +155,7 @@ const AppRoutes = () => (
       <Route
         path="papers/:paperId/edit"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
             <EditQuestionPaper />
           </RoleBasedRoute>
         }
@@ -163,7 +163,7 @@ const AppRoutes = () => (
       <Route
         path="papers/:paperId"
         element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
             <QuestionPaperDetail />
           </RoleBasedRoute>
         }
