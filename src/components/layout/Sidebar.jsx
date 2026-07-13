@@ -45,7 +45,7 @@ const AppSidebar = () => {
         id: 'dashboard',
         label: 'Dashboard',
         icon: LayoutDashboard,
-        path: '/dashboard',
+        path: user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin',
       },
       ...(user?.role === ROLES.OWNER
         ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]

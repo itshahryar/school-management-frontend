@@ -12,7 +12,8 @@ import PublicRoute from './components/common/PublicRoute';
 import RoleBasedRoute from './components/common/RoleBasedRoute';
 import AppLayout from './components/layout/AppLayout';
 
-import DashboardHome from './pages/DashboardHome';
+import OwnerDashboard from './pages/OwnerDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
 import Classes from './pages/Classes';
@@ -24,6 +25,7 @@ import GenerateQuestionPaper from './pages/GenerateQuestionPaper';
 import EditQuestionPaper from './pages/EditQuestionPaper';
 import QuestionPaperDetail from './pages/QuestionPaperDetail';
 import Unauthorized from './pages/Unauthorized';
+import NotFound from './pages/NotFound';
 
 import LoginForm from './features/auth/components/LoginForm';
 import ForgotPasswordForm from './features/auth/components/ForgotPasswordForm';
@@ -57,6 +59,12 @@ const AuthUnauthorizedListener = () => {
   }, [dispatch, navigate]);
 
   return null;
+};
+
+const DashboardRedirect = () => {
+  const { user } = useSelector((state) => state.auth);
+  const redirectPath = user?.role === ROLES.OWNER ? '/dashboard/owner' : '/dashboard/admin';
+  return <Navigate to={redirectPath} replace />;
 };
 
 const AppRoutes = () => (
@@ -101,8 +109,23 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route index element={<Navigate to="/dashboard" replace />} />
-      <Route path="dashboard" element={<DashboardHome />} />
+      <Route index element={<DashboardRedirect />} />
+      <Route
+        path="dashboard/owner"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <OwnerDashboard />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="dashboard/admin"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminDashboard />
+          </RoleBasedRoute>
+        }
+      />
       <Route path="settings" element={<Settings />} />
       <Route
         path="classes"
@@ -176,18 +199,10 @@ const AppRoutes = () => (
           </RoleBasedRoute>
         }
       />
-      <Route
-        path="admin"
-        element={
-          <RoleBasedRoute allowedRoles={[ROLES.OWNER, ROLES.ADMIN]}>
-            <DashboardHome />
-          </RoleBasedRoute>
-        }
-      />
     </Route>
 
     <Route path="/unauthorized" element={<Unauthorized />} />
-    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    <Route path="*" element={<NotFound />} />
   </Routes>
 );
 
