@@ -36,7 +36,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 
 const optionSchema = z.object({
-  text: z.string().trim().min(1, 'Option text is required'),
+  text: z.string(),
   isCorrect: z.boolean(),
   sortOrder: z.number().int().min(0).optional(),
 });
@@ -58,17 +58,27 @@ const questionFormSchema = z
     const options = data.options || [];
     if (options.length < 2) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'MCQ needs at least 2 options',
         path: ['options'],
       });
       return;
     }
 
+    options.forEach((opt, index) => {
+      if (!opt.text?.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Option text is required',
+          path: ['options', index, 'text'],
+        });
+      }
+    });
+
     const correctCount = options.filter((opt) => opt.isCorrect).length;
     if (correctCount < 1) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Mark at least one correct option',
         path: ['options'],
       });
@@ -76,8 +86,9 @@ const questionFormSchema = z
 
     if (!data.allowMultipleCorrect && correctCount > 1) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Only one correct option allowed unless multiple answers is enabled',
+        code: 'custom',
+        message:
+          'Only one correct option allowed unless multiple answers is enabled',
         path: ['options'],
       });
     }
@@ -161,16 +172,25 @@ const QuestionFormDialog = ({
   }, [open, questionItem, reset]);
 
   useEffect(() => {
-    if (questionType !== 'MCQ') return;
-    if (fields.length >= 2) return;
-    while (fields.length < 2) {
+    if (questionType === 'MCQ') {
+      if (fields.length >= 2) return;
       append({ text: '', isCorrect: false, sortOrder: fields.length });
+      return;
     }
-  }, [questionType, fields.length, append]);
+
+    if (fields.length > 0) {
+      setValue('options', [], { shouldValidate: false });
+      setValue('allowMultipleCorrect', false, { shouldValidate: false });
+    }
+  }, [questionType, fields.length, append, setValue]);
 
   const handleOpenChange = (nextOpen) => {
     if (isSubmitting) return;
     onOpenChange(nextOpen);
+  };
+
+  const onInvalid = () => {
+    toast.error('Please fix the highlighted fields');
   };
 
   const onSubmit = async (values) => {
@@ -186,7 +206,7 @@ const QuestionFormDialog = ({
       isActive: values.isActive,
       ...(values.type === 'MCQ'
         ? {
-            options: values.options.map((opt, index) => ({
+            options: (values.options || []).map((opt, index) => ({
               text: opt.text.trim(),
               isCorrect: Boolean(opt.isCorrect),
               sortOrder: index,
@@ -228,7 +248,11 @@ const QuestionFormDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+          className="space-y-4"
+          noValidate
+        >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Type</Label>
