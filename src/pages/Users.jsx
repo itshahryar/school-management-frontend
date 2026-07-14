@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import CreateUserForm from '@/features/auth/components/CreateUserForm';
 import EditUserForm from '@/features/users/components/EditUserForm';
+import ViewUserModal from '@/features/users/components/ViewUserModal';
 import UsersPagination from '@/features/users/components/UsersPagination';
 import UsersTable from '@/features/users/components/UsersTable';
 import UsersToolbar from '@/features/users/components/UsersToolbar';
@@ -16,6 +17,7 @@ const PAGE_SIZE = 10;
 const Users = () => {
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('');
@@ -90,6 +92,7 @@ const Users = () => {
             onRetry={refetch}
             onCreateUser={() => setShowCreateUser(true)}
             onEditUser={setEditingUser}
+            onViewUser={setViewingUser}
             hasActiveFilters={hasActiveFilters}
           />
         </div>
@@ -112,6 +115,14 @@ const Users = () => {
           if (!open) setEditingUser(null);
         }}
         userItem={editingUser}
+      />
+
+      <ViewUserModal
+        open={Boolean(viewingUser)}
+        onOpenChange={(open) => {
+          if (!open) setViewingUser(null);
+        }}
+        user={viewingUser}
       />
     </div>
   );

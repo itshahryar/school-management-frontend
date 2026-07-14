@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
 
 const defaultValues = {
   firstName: '',
@@ -34,6 +35,14 @@ const defaultValues = {
   role: ASSIGNABLE_ROLES[0],
   password: '',
   confirmPassword: '',
+  primaryPhone: '',
+  secondaryPhone: '',
+  primaryPhoneVerified: false,
+  address: '',
+  postalCode: '',
+  schoolName: '',
+  designation: '',
+  nationalId: '',
 };
 
 const CreateUserForm = ({ open, onOpenChange }) => {
@@ -183,6 +192,98 @@ const CreateUserForm = ({ open, onOpenChange }) => {
                 {errors.role ? (
                   <p className="text-xs text-destructive">{errors.role.message}</p>
                 ) : null}
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="create-primary-phone">Primary Phone</Label>
+                  <Input
+                    id="create-primary-phone"
+                    type="tel"
+                    placeholder="+1 234 567 8900"
+                    {...register('primaryPhone')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-secondary-phone">Secondary Phone</Label>
+                  <Input
+                    id="create-secondary-phone"
+                    type="tel"
+                    placeholder="+1 234 567 8900"
+                    {...register('secondaryPhone')}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+                <div>
+                  <Label htmlFor="create-phone-verified">
+                    Primary phone verified
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Mark when the primary number has been checked
+                  </p>
+                </div>
+                <Controller
+                  name="primaryPhoneVerified"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="create-phone-verified"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="create-address">Address</Label>
+                <Input
+                  id="create-address"
+                  placeholder="Street, City, State"
+                  {...register('address')}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="create-postal-code">Postal Code</Label>
+                  <Input
+                    id="create-postal-code"
+                    placeholder="e.g. 54000"
+                    {...register('postalCode')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-national-id">CNIC / National ID</Label>
+                  <Input
+                    id="create-national-id"
+                    placeholder="e.g. 35202-1234567-1"
+                    {...register('nationalId')}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="create-school-name">School Name</Label>
+                  <Input
+                    id="create-school-name"
+                    placeholder="Enter school name"
+                    {...register('schoolName')}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-designation">
+                    Designation in School
+                  </Label>
+                  <Input
+                    id="create-designation"
+                    placeholder="e.g. Principal, Teacher"
+                    {...register('designation')}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">

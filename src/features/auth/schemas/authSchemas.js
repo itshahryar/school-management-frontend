@@ -48,6 +48,14 @@ export const createUserSchema = z
     role: z.enum(['ADMIN'], {
       required_error: 'Please select a role',
     }),
+    primaryPhone: z.string().optional(),
+    secondaryPhone: z.string().optional(),
+    primaryPhoneVerified: z.boolean().optional(),
+    address: z.string().optional(),
+    postalCode: z.string().optional(),
+    schoolName: z.string().optional(),
+    designation: z.string().optional(),
+    nationalId: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -63,6 +71,14 @@ export const updateUserSchema = z
     isActive: z.boolean(),
     password: z.string().optional().or(z.literal('')),
     confirmPassword: z.string().optional().or(z.literal('')),
+    primaryPhone: z.string().optional(),
+    secondaryPhone: z.string().optional(),
+    primaryPhoneVerified: z.boolean(),
+    address: z.string().optional(),
+    postalCode: z.string().optional(),
+    schoolName: z.string().optional(),
+    designation: z.string().optional(),
+    nationalId: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     const password = data.password?.trim() || '';

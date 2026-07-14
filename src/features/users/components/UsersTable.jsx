@@ -1,4 +1,4 @@
-import { AlertCircle, Pencil, UsersRound } from 'lucide-react';
+import { AlertCircle, Eye, Pencil, UsersRound } from 'lucide-react';
 import EmptyState from '@/components/common/EmptyState';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,7 @@ const UsersTable = ({
   onRetry,
   onCreateUser,
   onEditUser,
+  onViewUser,
   hasActiveFilters,
 }) => {
   if (isLoading) {
@@ -95,6 +96,7 @@ const UsersTable = ({
           <TableHead className="pl-4">User</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead className="hidden lg:table-cell">Phone verified</TableHead>
           <TableHead className="hidden sm:table-cell">Email</TableHead>
           <TableHead className="hidden md:table-cell">Joined</TableHead>
           <TableHead className="pr-4 text-right">Actions</TableHead>
@@ -130,6 +132,18 @@ const UsersTable = ({
                 {user.isActive ? 'Active' : 'Inactive'}
               </Badge>
             </TableCell>
+            <TableCell className="hidden lg:table-cell">
+              <Badge
+                variant="outline"
+                className={cn(
+                  user.primaryPhoneVerified
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'border-amber-200 bg-amber-50 text-amber-800'
+                )}
+              >
+                {user.primaryPhoneVerified ? 'Verified' : 'Not verified'}
+              </Badge>
+            </TableCell>
             <TableCell className="hidden text-muted-foreground sm:table-cell">
               {user.email}
             </TableCell>
@@ -137,15 +151,26 @@ const UsersTable = ({
               {formatDate(user.createdAt)}
             </TableCell>
             <TableCell className="pr-4 text-right">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => onEditUser?.(user)}
-              >
-                <Pencil />
-                Edit
-              </Button>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onViewUser?.(user)}
+                >
+                  <Eye />
+                  View
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEditUser?.(user)}
+                >
+                  <Pencil />
+                  Edit
+                </Button>
+              </div>
             </TableCell>
           </TableRow>
         ))}

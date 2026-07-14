@@ -48,6 +48,14 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       isActive: true,
       password: '',
       confirmPassword: '',
+      primaryPhone: '',
+      secondaryPhone: '',
+      primaryPhoneVerified: false,
+      address: '',
+      postalCode: '',
+      schoolName: '',
+      designation: '',
+      nationalId: '',
     },
   });
 
@@ -61,6 +69,14 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
         isActive: true,
         password: '',
         confirmPassword: '',
+        primaryPhone: '',
+        secondaryPhone: '',
+        primaryPhoneVerified: false,
+        address: '',
+        postalCode: '',
+        schoolName: '',
+        designation: '',
+        nationalId: '',
       });
       setShowPassword(false);
       setShowConfirmPassword(false);
@@ -78,6 +94,14 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       isActive: userItem.isActive ?? true,
       password: '',
       confirmPassword: '',
+      primaryPhone: userItem.primaryPhone || '',
+      secondaryPhone: userItem.secondaryPhone || '',
+      primaryPhoneVerified: userItem.primaryPhoneVerified ?? false,
+      address: userItem.address || '',
+      postalCode: userItem.postalCode || '',
+      schoolName: userItem.schoolName || '',
+      designation: userItem.designation || '',
+      nationalId: userItem.nationalId || '',
     });
   }, [open, userItem, reset]);
 
@@ -95,6 +119,14 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       lastName: values.lastName.trim(),
       email: values.email.trim(),
       isActive: isOwnerAccount ? true : values.isActive,
+      primaryPhone: values.primaryPhone?.trim() || null,
+      secondaryPhone: values.secondaryPhone?.trim() || null,
+      primaryPhoneVerified: Boolean(values.primaryPhoneVerified),
+      address: values.address?.trim() || null,
+      postalCode: values.postalCode?.trim() || null,
+      schoolName: values.schoolName?.trim() || null,
+      designation: values.designation?.trim() || null,
+      nationalId: values.nationalId?.trim() || null,
     };
 
     if (!isOwnerAccount) {
@@ -181,6 +213,97 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
             {errors.email ? (
               <p className="text-xs text-destructive">{errors.email.message}</p>
             ) : null}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-primary-phone">Primary Phone</Label>
+              <Input
+                id="edit-primary-phone"
+                type="tel"
+                placeholder="+1 234 567 8900"
+                {...register('primaryPhone')}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-secondary-phone">Secondary Phone</Label>
+              <Input
+                id="edit-secondary-phone"
+                type="tel"
+                placeholder="+1 234 567 8900"
+                {...register('secondaryPhone')}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+            <div>
+              <Label htmlFor="edit-phone-verified">
+                Primary phone verified
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Toggle when the primary number has been verified
+              </p>
+            </div>
+            <Controller
+              name="primaryPhoneVerified"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="edit-phone-verified"
+                  checked={field.value}
+                  disabled={isLoading}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-address">Address</Label>
+            <Input
+              id="edit-address"
+              placeholder="Street, City, State"
+              {...register('address')}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-postal-code">Postal Code</Label>
+              <Input
+                id="edit-postal-code"
+                placeholder="e.g. 54000"
+                {...register('postalCode')}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-national-id">CNIC / National ID</Label>
+              <Input
+                id="edit-national-id"
+                placeholder="e.g. 35202-1234567-1"
+                {...register('nationalId')}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-school-name">School Name</Label>
+              <Input
+                id="edit-school-name"
+                placeholder="Enter school name"
+                {...register('schoolName')}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-designation">Designation in School</Label>
+              <Input
+                id="edit-designation"
+                placeholder="e.g. Principal, Teacher"
+                {...register('designation')}
+              />
+            </div>
           </div>
 
           {!isOwnerAccount ? (
