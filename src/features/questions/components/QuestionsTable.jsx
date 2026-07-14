@@ -84,7 +84,7 @@ const QuestionsTable = ({
           hasActiveFilters
             ? 'Try adjusting your search or filters.'
             : canCreate
-              ? 'Add MCQ, short, or long answer questions to this topic’s bank.'
+              ? 'Add MCQ, short, or long questions to this topic’s bank.'
               : 'Add questions under topics and sub-topics — this chapter only shows their total.'
         }
         action={

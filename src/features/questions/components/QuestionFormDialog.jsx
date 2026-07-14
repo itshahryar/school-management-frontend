@@ -43,7 +43,7 @@ const optionSchema = z.object({
 
 const questionFormSchema = z
   .object({
-    type: z.enum(['MCQ', 'SHORT_ANSWER', 'LONG_ANSWER']),
+    type: z.enum(['MCQ', 'SHORT_QUESTION', 'LONG_QUESTION']),
     difficulty: z.enum(['EASY', 'MEDIUM', 'HARD']),
     text: z.string().trim().min(1, 'Question text is required'),
     marks: z.coerce.number().positive('Marks must be greater than 0'),
@@ -244,7 +244,7 @@ const QuestionFormDialog = ({
           <DialogTitle>{isEdit ? 'Edit Question' : 'Add Question'}</DialogTitle>
           <DialogDescription>
             Add to the question bank for this topic or section. Short and long
-            answers do not store model answers.
+            questions do not store model answers.
           </DialogDescription>
         </DialogHeader>
 

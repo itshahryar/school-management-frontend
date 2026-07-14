@@ -139,7 +139,7 @@ export const parseMcqBlock = (body, number) => {
 };
 
 /**
- * Parse numbered short/long answer questions (no options).
+ * Parse numbered short/long questions (no options).
  */
 export const parseTextBlocks = (rawText) => {
   const blocks = splitNumberedBlocks(rawText);

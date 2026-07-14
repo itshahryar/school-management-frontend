@@ -36,16 +36,16 @@ Answer: C
 2. Dynamics is the branch of physics that studies: A) Light B) Heat C) Forces causing motion D) Sound
 
 Answer: C`,
-  SHORT_ANSWER: `1. Define force and explain its effects with five examples.
+  SHORT_QUESTION: `1. Define force and explain its effects with five examples.
 
 2. What is dynamics? How is it different from kinematics?`,
-  LONG_ANSWER: `1. Write a detailed note on the concept of force.
+  LONG_QUESTION: `1. Write a detailed note on the concept of force.
 
 2. Discuss different examples of forces acting in everyday life.`,
 };
 
 const BulkImportDialog = ({ open, onOpenChange, contentNodeId }) => {
-  const [type, setType] = useState('SHORT_ANSWER');
+  const [type, setType] = useState('SHORT_QUESTION');
   const [difficulty, setDifficulty] = useState('MEDIUM');
   const [marks, setMarks] = useState('1');
   const [rawText, setRawText] = useState('');
@@ -60,7 +60,7 @@ const BulkImportDialog = ({ open, onOpenChange, contentNodeId }) => {
   const marksValid = Number.isFinite(marksValue) && marksValue > 0;
 
   const resetForm = () => {
-    setType('SHORT_ANSWER');
+    setType('SHORT_QUESTION');
     setDifficulty('MEDIUM');
     setMarks('1');
     setRawText('');
@@ -199,7 +199,7 @@ const BulkImportDialog = ({ open, onOpenChange, contentNodeId }) => {
                 size="sm"
                 className="h-7 text-xs"
                 disabled={isLoading}
-                onClick={() => setRawText(EXAMPLES[type] || EXAMPLES.SHORT_ANSWER)}
+                onClick={() => setRawText(EXAMPLES[type] || EXAMPLES.SHORT_QUESTION)}
               >
                 Insert example
               </Button>

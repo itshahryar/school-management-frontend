@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
 
 const SECTION_LABELS = {
   MCQ: 'Section A — Multiple Choice Questions',
-  SHORT_ANSWER: 'Section B — Short Answer Questions',
-  LONG_ANSWER: 'Section C — Long Answer Questions',
+  SHORT_QUESTION: 'Section B — Short Questions',
+  LONG_QUESTION: 'Section C — Long Questions',
 };
 
 const letterFor = (index) => String.fromCharCode(65 + index);
@@ -164,8 +164,8 @@ const QuestionBlock = ({ item, index }) => (
           </View>
         ) : null}
 
-        {item.questionType === 'SHORT_ANSWER' ? <AnswerSpace lines={2} /> : null}
-        {item.questionType === 'LONG_ANSWER' ? <AnswerSpace lines={5} /> : null}
+        {item.questionType === 'SHORT_QUESTION' ? <AnswerSpace lines={2} /> : null}
+        {item.questionType === 'LONG_QUESTION' ? <AnswerSpace lines={5} /> : null}
       </View>
     </View>
   </View>

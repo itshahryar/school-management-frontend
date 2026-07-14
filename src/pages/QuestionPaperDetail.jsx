@@ -43,8 +43,8 @@ const letterFor = (index) => String.fromCharCode(65 + index);
 
 const SECTION_TAB_LABELS = {
   MCQ: "MCQ's",
-  SHORT_ANSWER: 'Short Questions',
-  LONG_ANSWER: 'Long Questions',
+  SHORT_QUESTION: 'Short Questions',
+  LONG_QUESTION: 'Long Questions',
 };
 
 const statusClass = (code) => {
