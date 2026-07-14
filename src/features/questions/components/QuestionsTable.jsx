@@ -54,6 +54,7 @@ const QuestionsTable = ({
   showTopic = false,
   canCreate = true,
   showActions = true,
+  showStatus = true,
 }) => {
   if (isLoading) return <QuestionsTableSkeleton />;
 
@@ -106,7 +107,7 @@ const QuestionsTable = ({
           <TableHead>Type</TableHead>
           <TableHead>Difficulty</TableHead>
           <TableHead>Marks</TableHead>
-          <TableHead>Status</TableHead>
+          {showStatus ? <TableHead>Status</TableHead> : null}
           {showActions ? <TableHead className="pr-4 text-right">Actions</TableHead> : null}
         </TableRow>
       </TableHeader>
@@ -135,25 +136,38 @@ const QuestionsTable = ({
               </Badge>
             </TableCell>
             <TableCell>
-              <Badge variant="outline">
+              <Badge
+                variant="outline"
+                className={cn(
+                  item.difficulty === 'EASY'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : item.difficulty === 'MEDIUM'
+                      ? 'border-amber-200 bg-amber-50 text-amber-700'
+                      : item.difficulty === 'HARD'
+                        ? 'border-rose-200 bg-rose-50 text-rose-700'
+                        : ''
+                )}
+              >
                 {DIFFICULTY_LABELS[item.difficulty] || item.difficulty}
               </Badge>
             </TableCell>
             <TableCell className="tabular-nums text-muted-foreground">
               {Number(item.marks)}
             </TableCell>
-            <TableCell>
-              <Badge
-                variant="outline"
-                className={cn(
-                  item.isActive
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                    : 'border-rose-200 bg-rose-50 text-rose-700'
-                )}
-              >
-                {item.isActive ? 'Active' : 'Inactive'}
-              </Badge>
-            </TableCell>
+            {showStatus ? (
+              <TableCell>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    item.isActive
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border-rose-200 bg-rose-50 text-rose-700'
+                  )}
+                >
+                  {item.isActive ? 'Active' : 'Inactive'}
+                </Badge>
+              </TableCell>
+            ) : null}
             {showActions ? (
               <TableCell className="pr-4 text-right">
                 <DropdownMenu>

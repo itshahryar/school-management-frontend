@@ -60,6 +60,7 @@ const AdminNodeQuestions = () => {
       type,
       difficulty,
       sort,
+      isActive: 'true',
     },
     { skip: !nodeId }
   );
@@ -155,6 +156,7 @@ const AdminNodeQuestions = () => {
             showTopic={isChapter}
             canCreate={false}
             showActions={false}
+            showStatus={false}
           />
         </div>
 

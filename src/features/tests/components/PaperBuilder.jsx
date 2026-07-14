@@ -703,7 +703,18 @@ const PaperBuilder = ({ initialPaper = null }) => {
                           <Badge variant="secondary">
                             {QUESTION_TYPE_LABELS[question.type]}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              question.difficulty === 'EASY'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                : question.difficulty === 'MEDIUM'
+                                  ? 'border-amber-200 bg-amber-50 text-amber-700'
+                                  : question.difficulty === 'HARD'
+                                    ? 'border-rose-200 bg-rose-50 text-rose-700'
+                                    : ''
+                            )}
+                          >
                             {DIFFICULTY_LABELS[question.difficulty]}
                           </Badge>
                           <Badge variant="outline">
@@ -810,7 +821,18 @@ const PaperBuilder = ({ initialPaper = null }) => {
                                 {item.text}
                               </p>
                               <div className="flex flex-wrap items-center gap-2">
-                                <Badge variant="outline">
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    item.difficulty === 'EASY'
+                                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                      : item.difficulty === 'MEDIUM'
+                                        ? 'border-amber-200 bg-amber-50 text-amber-700'
+                                        : item.difficulty === 'HARD'
+                                          ? 'border-rose-200 bg-rose-50 text-rose-700'
+                                          : ''
+                                  )}
+                                >
                                   {DIFFICULTY_LABELS[item.difficulty] ||
                                     item.difficulty}
                                 </Badge>
