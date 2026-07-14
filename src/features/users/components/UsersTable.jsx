@@ -95,10 +95,10 @@ const UsersTable = ({
         <TableRow>
           <TableHead className="pl-4">User</TableHead>
           <TableHead>Role</TableHead>
+          <TableHead className="hidden lg:table-cell">School</TableHead>
+          <TableHead className="hidden sm:table-cell">Email</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="hidden lg:table-cell">Phone verified</TableHead>
-          <TableHead className="hidden sm:table-cell">Email</TableHead>
-          <TableHead className="hidden md:table-cell">Joined</TableHead>
           <TableHead className="pr-4 text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -119,6 +119,14 @@ const UsersTable = ({
               <Badge variant="secondary" className="capitalize">
                 {user.role?.toLowerCase()}
               </Badge>
+            </TableCell>
+            <TableCell className="hidden lg:table-cell max-w-[150px]">
+              <span className="block truncate text-sm text-muted-foreground" title={user.schoolName || ''}>
+                {user.schoolName || '—'}
+              </span>
+            </TableCell>
+            <TableCell className="hidden text-muted-foreground sm:table-cell">
+              {user.email}
             </TableCell>
             <TableCell>
               <Badge
@@ -143,12 +151,6 @@ const UsersTable = ({
               >
                 {user.primaryPhoneVerified ? 'Verified' : 'Not verified'}
               </Badge>
-            </TableCell>
-            <TableCell className="hidden text-muted-foreground sm:table-cell">
-              {user.email}
-            </TableCell>
-            <TableCell className="hidden text-muted-foreground md:table-cell">
-              {formatDate(user.createdAt)}
             </TableCell>
             <TableCell className="pr-4 text-right">
               <div className="flex justify-end gap-2">

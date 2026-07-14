@@ -40,7 +40,7 @@ const UsersToolbar = ({
         type="search"
         value={search}
         onChange={(event) => onSearchChange(event.target.value)}
-        placeholder="Search by name or email…"
+        placeholder="Search by name, email, or school…"
         className="pl-8"
         aria-label="Search users"
       />

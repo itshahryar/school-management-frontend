@@ -98,7 +98,7 @@ const CreateUserForm = ({ open, onOpenChange }) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="sm:max-w-md"
+        className="sm:max-w-md max-h-[90vh] overflow-y-auto"
         onPointerDownOutside={(event) => {
           if (isSubmitting) event.preventDefault();
         }}
