@@ -20,6 +20,10 @@ import Classes from './pages/Classes';
 import ClassSubjects from './pages/ClassSubjects';
 import SubjectContent from './pages/SubjectContent';
 import NodeQuestions from './pages/NodeQuestions';
+import AdminClasses from './pages/AdminClasses';
+import AdminClassSubjects from './pages/AdminClassSubjects';
+import AdminSubjectContent from './pages/AdminSubjectContent';
+import AdminNodeQuestions from './pages/AdminNodeQuestions';
 import QuestionPapers from './pages/QuestionPapers';
 import GenerateQuestionPaper from './pages/GenerateQuestionPaper';
 import EditQuestionPaper from './pages/EditQuestionPaper';
@@ -206,6 +210,38 @@ const AppRoutes = () => (
         element={
           <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <Users />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="admin/classes"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminClasses />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="admin/classes/:classId/subjects"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminClassSubjects />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="admin/classes/:classId/subjects/:subjectId/content"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminSubjectContent />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="admin/classes/:classId/subjects/:subjectId/content/:nodeId/questions"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminNodeQuestions />
           </RoleBasedRoute>
         }
       />

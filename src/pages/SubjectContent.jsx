@@ -16,6 +16,7 @@ import {
   useDeleteContentNodeMutation,
   useGetContentTreeQuery,
 } from '@/features/contentNodes/api/contentNodesApi';
+import ContentStructureInfo from '@/components/common/ContentStructureInfo';
 import EmptyState from '@/components/common/EmptyState';
 import PageHeader from '@/components/common/PageHeader';
 import {
@@ -174,6 +175,8 @@ const SubjectContent = () => {
           className="mb-0"
         />
       </div>
+
+      <ContentStructureInfo />
 
       <Card className="gap-0 overflow-hidden py-0">
         <div

@@ -53,6 +53,7 @@ const QuestionsTable = ({
   hasActiveFilters,
   showTopic = false,
   canCreate = true,
+  showActions = true,
 }) => {
   if (isLoading) return <QuestionsTableSkeleton />;
 
@@ -106,7 +107,7 @@ const QuestionsTable = ({
           <TableHead>Difficulty</TableHead>
           <TableHead>Marks</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="pr-4 text-right">Actions</TableHead>
+          {showActions ? <TableHead className="pr-4 text-right">Actions</TableHead> : null}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -153,34 +154,36 @@ const QuestionsTable = ({
                 {item.isActive ? 'Active' : 'Inactive'}
               </Badge>
             </TableCell>
-            <TableCell className="pr-4 text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Question actions"
-                  >
-                    <MoreHorizontal />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEdit(item)}>
-                    <Pencil />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => onDelete(item)}
-                  >
-                    <Trash2 />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+            {showActions ? (
+              <TableCell className="pr-4 text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Question actions"
+                    >
+                      <MoreHorizontal />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEdit(item)}>
+                      <Pencil />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => onDelete(item)}
+                    >
+                      <Trash2 />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            ) : null}
           </TableRow>
         ))}
       </TableBody>
