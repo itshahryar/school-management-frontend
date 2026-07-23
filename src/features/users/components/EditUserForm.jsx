@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useUpdateUserMutation } from '@/features/users/api/usersApi';
+import UserSchoolAssignments from '@/features/schools/components/UserSchoolAssignments';
 import { updateUserSchema } from '@/features/auth/schemas/authSchemas';
 import { ASSIGNABLE_ROLES, ROLES } from '@/constants/roles';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
   const [updateUser, { isLoading }] = useUpdateUserMutation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [schoolAssignments, setSchoolAssignments] = useState([]);
 
   const isOwnerAccount = userItem?.role === ROLES.OWNER;
 
@@ -51,10 +53,6 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       primaryPhone: '',
       secondaryPhone: '',
       primaryPhoneVerified: false,
-      address: '',
-      postalCode: '',
-      schoolName: '',
-      designation: '',
       nationalId: '',
     },
   });
@@ -72,12 +70,9 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
         primaryPhone: '',
         secondaryPhone: '',
         primaryPhoneVerified: false,
-        address: '',
-        postalCode: '',
-        schoolName: '',
-        designation: '',
         nationalId: '',
       });
+      setSchoolAssignments([]);
       setShowPassword(false);
       setShowConfirmPassword(false);
       return;
@@ -97,12 +92,14 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       primaryPhone: userItem.primaryPhone || '',
       secondaryPhone: userItem.secondaryPhone || '',
       primaryPhoneVerified: userItem.primaryPhoneVerified ?? false,
-      address: userItem.address || '',
-      postalCode: userItem.postalCode || '',
-      schoolName: userItem.schoolName || '',
-      designation: userItem.designation || '',
       nationalId: userItem.nationalId || '',
     });
+    setSchoolAssignments(
+      (userItem.schools || []).map((membership) => ({
+        schoolId: membership.school.id,
+        designation: membership.designation || '',
+      }))
+    );
   }, [open, userItem, reset]);
 
   const handleOpenChange = (nextOpen) => {
@@ -122,11 +119,11 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
       primaryPhone: values.primaryPhone?.trim() || null,
       secondaryPhone: values.secondaryPhone?.trim() || null,
       primaryPhoneVerified: Boolean(values.primaryPhoneVerified),
-      address: values.address?.trim() || null,
-      postalCode: values.postalCode?.trim() || null,
-      schoolName: values.schoolName?.trim() || null,
-      designation: values.designation?.trim() || null,
       nationalId: values.nationalId?.trim() || null,
+      schoolAssignments: schoolAssignments.map((item) => ({
+        schoolId: item.schoolId,
+        designation: item.designation?.trim() || null,
+      })),
     };
 
     if (!isOwnerAccount) {
@@ -260,51 +257,23 @@ const EditUserForm = ({ open, onOpenChange, userItem = null }) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-address">Address</Label>
+            <Label htmlFor="edit-national-id">CNIC / National ID</Label>
             <Input
-              id="edit-address"
-              placeholder="Street, City, State"
-              {...register('address')}
+              id="edit-national-id"
+              placeholder="e.g. 35202-1234567-1"
+              {...register('nationalId')}
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="edit-postal-code">Postal Code</Label>
-              <Input
-                id="edit-postal-code"
-                placeholder="e.g. 54000"
-                {...register('postalCode')}
+          {!isOwnerAccount ? (
+            <div className="rounded-lg border p-3">
+              <UserSchoolAssignments
+                assignments={schoolAssignments}
+                onChange={setSchoolAssignments}
+                disabled={isLoading}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-national-id">CNIC / National ID</Label>
-              <Input
-                id="edit-national-id"
-                placeholder="e.g. 35202-1234567-1"
-                {...register('nationalId')}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="edit-school-name">School Name</Label>
-              <Input
-                id="edit-school-name"
-                placeholder="Enter school name"
-                {...register('schoolName')}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-designation">Designation in School</Label>
-              <Input
-                id="edit-designation"
-                placeholder="e.g. Principal, Teacher"
-                {...register('designation')}
-              />
-            </div>
-          </div>
+          ) : null}
 
           {!isOwnerAccount ? (
             <div className="space-y-2">

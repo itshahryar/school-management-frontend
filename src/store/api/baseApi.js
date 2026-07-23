@@ -31,6 +31,8 @@ export const baseApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: [
     'Users',
+    'Schools',
+    'SchoolCurriculum',
     'Classes',
     'Subjects',
     'ContentNodes',

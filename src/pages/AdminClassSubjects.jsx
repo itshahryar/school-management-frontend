@@ -1,28 +1,24 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, BookOpen } from 'lucide-react';
 import { useGetClassQuery } from '@/features/classes/api/classesApi';
-import { useGetSubjectsQuery } from '@/features/subjects/api/subjectsApi';
+import { useGetSchoolCurriculumQuery } from '@/features/schools/api/schoolsApi';
 import PageHeader from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
-
-const PAGE_SIZE = 50;
 
 const AdminClassSubjects = () => {
   const { classId } = useParams();
-  const [page, setPage] = useState(1);
+  const [searchParams] = useSearchParams();
+  const schoolId = searchParams.get('schoolId') || '';
   const [search, setSearch] = useState('');
 
-  const debouncedSearch = useDebounce(search, 400);
-
   useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, classId]);
+    setSearch('');
+  }, [classId, schoolId]);
 
   const {
     data: classRecord,
@@ -32,27 +28,37 @@ const AdminClassSubjects = () => {
   } = useGetClassQuery(classId, { skip: !classId });
 
   const {
-    data,
-    isLoading,
-    isFetching,
-    isError,
-    error,
+    data: curriculum,
+    isLoading: isCurriculumLoading,
+    isError: isCurriculumError,
+    error: curriculumError,
     refetch,
-  } = useGetSubjectsQuery(
-    {
-      page,
-      limit: PAGE_SIZE,
-      classId,
-      search: debouncedSearch,
-    },
-    { skip: !classId }
-  );
+  } = useGetSchoolCurriculumQuery(schoolId, {
+    skip: !schoolId,
+  });
 
-  const subjects = data?.subjects ?? [];
+  const subjects = useMemo(() => {
+    const classSubjects =
+      curriculum?.classes?.find((item) => item.id === classId)?.subjects ?? [];
+
+    if (!search.trim()) return classSubjects;
+
+    const term = search.trim().toLowerCase();
+    return classSubjects.filter(
+      (subject) =>
+        subject.name.toLowerCase().includes(term) ||
+        subject.code?.toLowerCase().includes(term)
+    );
+  }, [curriculum, classId, search]);
+
+  const backLink = schoolId
+    ? '/admin/classes'
+    : '/admin/classes';
+
   const errorMessage =
-    error?.data?.message ||
-    (typeof error?.data === 'string' ? error.data : null) ||
-    'Failed to load subjects';
+    curriculumError?.data?.message ||
+    (typeof curriculumError?.data === 'string' ? curriculumError.data : null) ||
+    'Failed to load assigned subjects';
 
   if (isClassLoading) {
     return (
@@ -71,7 +77,20 @@ const AdminClassSubjects = () => {
           {classError?.data?.message || 'Class not found.'}
         </p>
         <Button asChild variant="outline" className="mt-4">
-          <Link to="/admin/classes">Back to Classes</Link>
+          <Link to={backLink}>Back to Classes</Link>
+        </Button>
+      </Card>
+    );
+  }
+
+  if (!schoolId) {
+    return (
+      <Card className="p-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          Open this class from your school list to view assigned subjects.
+        </p>
+        <Button asChild variant="outline" className="mt-4">
+          <Link to={backLink}>Back to Classes</Link>
         </Button>
       </Card>
     );
@@ -81,7 +100,7 @@ const AdminClassSubjects = () => {
     <div className="space-y-6">
       <div>
         <Button asChild variant="ghost" size="sm" className="-ml-2 mb-3">
-          <Link to="/admin/classes">
+          <Link to={backLink}>
             <ArrowLeft />
             Back to Classes
           </Link>
@@ -89,7 +108,7 @@ const AdminClassSubjects = () => {
 
         <PageHeader
           title={`Subjects · ${classRecord.name}`}
-          description="View all subjects for this class. Click on a subject to view its topics and questions."
+          description="View subjects assigned to your school for this class."
           className="mb-0"
         />
       </div>
@@ -99,19 +118,19 @@ const AdminClassSubjects = () => {
           <input
             type="search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Search subjects..."
             className="w-full max-w-sm px-3 py-2 text-sm border rounded-md"
           />
         </div>
 
-        {isLoading ? (
+        {isCurriculumLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton key={index} className="h-32" />
             ))}
           </div>
-        ) : isError ? (
+        ) : isCurriculumError ? (
           <div className="text-center py-8">
             <p className="text-sm text-muted-foreground mb-4">{errorMessage}</p>
             <Button variant="outline" onClick={refetch}>
@@ -120,14 +139,16 @@ const AdminClassSubjects = () => {
           </div>
         ) : !subjects.length ? (
           <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">No subjects found</p>
+            <p className="text-sm text-muted-foreground">
+              No assigned subjects found for this class.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {subjects.map((subject) => (
               <Link
                 key={subject.id}
-                to={`/admin/classes/${classId}/subjects/${subject.id}/content`}
+                to={`/admin/classes/${classId}/subjects/${subject.id}/content?schoolId=${schoolId}`}
               >
                 <Card
                   className={cn(
@@ -152,11 +173,11 @@ const AdminClassSubjects = () => {
                       {subject.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
-                  {subject.description && (
+                  {subject.description ? (
                     <p className="text-xs text-muted-foreground line-clamp-2">
                       {subject.description}
                     </p>
-                  )}
+                  ) : null}
                 </Card>
               </Link>
             ))}

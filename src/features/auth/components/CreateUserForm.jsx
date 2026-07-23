@@ -6,6 +6,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createUser } from '@/store/slices/authSlice';
 import { usersApi } from '@/features/users/api/usersApi';
+import UserSchoolAssignments from '@/features/schools/components/UserSchoolAssignments';
 import { createUserSchema } from '../schemas/authSchemas';
 import { ASSIGNABLE_ROLES, ROLES } from '@/constants/roles';
 import { Button } from '@/components/ui/button';
@@ -38,10 +39,6 @@ const defaultValues = {
   primaryPhone: '',
   secondaryPhone: '',
   primaryPhoneVerified: false,
-  address: '',
-  postalCode: '',
-  schoolName: '',
-  designation: '',
   nationalId: '',
 };
 
@@ -51,6 +48,7 @@ const CreateUserForm = ({ open, onOpenChange }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [schoolAssignments, setSchoolAssignments] = useState([]);
 
   const canCreate = currentUser?.role === ROLES.OWNER;
 
@@ -68,6 +66,7 @@ const CreateUserForm = ({ open, onOpenChange }) => {
   useEffect(() => {
     if (!open) {
       reset(defaultValues);
+      setSchoolAssignments([]);
       setShowPassword(false);
       setShowConfirmPassword(false);
       setIsSubmitting(false);
@@ -82,7 +81,13 @@ const CreateUserForm = ({ open, onOpenChange }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const userData = { ...data };
+      const userData = {
+        ...data,
+        schoolAssignments: schoolAssignments.map((item) => ({
+          schoolId: item.schoolId,
+          designation: item.designation?.trim() || null,
+        })),
+      };
       delete userData.confirmPassword;
       await dispatch(createUser(userData)).unwrap();
       dispatch(usersApi.util.invalidateTags([{ type: 'Users', id: 'LIST' }]));
@@ -111,7 +116,7 @@ const CreateUserForm = ({ open, onOpenChange }) => {
             <DialogHeader>
               <DialogTitle>Create New User</DialogTitle>
               <DialogDescription>
-                Create a new user account and assign a role.
+                Create a user account, assign a role, and link them to one or more schools.
               </DialogDescription>
             </DialogHeader>
 
@@ -238,52 +243,20 @@ const CreateUserForm = ({ open, onOpenChange }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="create-address">Address</Label>
+                <Label htmlFor="create-national-id">CNIC / National ID</Label>
                 <Input
-                  id="create-address"
-                  placeholder="Street, City, State"
-                  {...register('address')}
+                  id="create-national-id"
+                  placeholder="e.g. 35202-1234567-1"
+                  {...register('nationalId')}
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="create-postal-code">Postal Code</Label>
-                  <Input
-                    id="create-postal-code"
-                    placeholder="e.g. 54000"
-                    {...register('postalCode')}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="create-national-id">CNIC / National ID</Label>
-                  <Input
-                    id="create-national-id"
-                    placeholder="e.g. 35202-1234567-1"
-                    {...register('nationalId')}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="create-school-name">School Name</Label>
-                  <Input
-                    id="create-school-name"
-                    placeholder="Enter school name"
-                    {...register('schoolName')}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="create-designation">
-                    Designation in School
-                  </Label>
-                  <Input
-                    id="create-designation"
-                    placeholder="e.g. Principal, Teacher"
-                    {...register('designation')}
-                  />
-                </div>
+              <div className="rounded-lg border p-3">
+                <UserSchoolAssignments
+                  assignments={schoolAssignments}
+                  onChange={setSchoolAssignments}
+                  disabled={isSubmitting}
+                />
               </div>
 
               <div className="space-y-2">

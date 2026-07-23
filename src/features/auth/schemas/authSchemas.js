@@ -38,6 +38,11 @@ export const changePasswordSchema = z
     path: ['confirmPassword'],
   });
 
+const schoolAssignmentSchema = z.object({
+  schoolId: z.string().uuid('Invalid school'),
+  designation: z.string().optional(),
+});
+
 export const createUserSchema = z
   .object({
     firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -51,11 +56,8 @@ export const createUserSchema = z
     primaryPhone: z.string().optional(),
     secondaryPhone: z.string().optional(),
     primaryPhoneVerified: z.boolean().optional(),
-    address: z.string().optional(),
-    postalCode: z.string().optional(),
-    schoolName: z.string().optional(),
-    designation: z.string().optional(),
     nationalId: z.string().optional(),
+    schoolAssignments: z.array(schoolAssignmentSchema).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -74,11 +76,8 @@ export const updateUserSchema = z
     primaryPhone: z.string().optional(),
     secondaryPhone: z.string().optional(),
     primaryPhoneVerified: z.boolean(),
-    address: z.string().optional(),
-    postalCode: z.string().optional(),
-    schoolName: z.string().optional(),
-    designation: z.string().optional(),
     nationalId: z.string().optional(),
+    schoolAssignments: z.array(schoolAssignmentSchema).optional(),
   })
   .superRefine((data, ctx) => {
     const password = data.password?.trim() || '';

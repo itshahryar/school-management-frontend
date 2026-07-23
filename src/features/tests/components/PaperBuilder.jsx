@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   ArrowDown,
   ArrowLeft,
@@ -14,6 +15,10 @@ import {
 import toast from 'react-hot-toast';
 import { useGetClassesQuery } from '@/features/classes/api/classesApi';
 import { useGetSubjectsQuery } from '@/features/subjects/api/subjectsApi';
+import {
+  useGetMySchoolsQuery,
+  useGetSchoolCurriculumQuery,
+} from '@/features/schools/api/schoolsApi';
 import { useGetContentTreeQuery } from '@/features/contentNodes/api/contentNodesApi';
 import { useGetQuestionsQuery } from '@/features/questions/api/questionsApi';
 import { useGetTestTypesQuery } from '@/features/tests/api/testMetaApi';
@@ -28,6 +33,7 @@ import {
   QUESTION_TYPE_LABELS,
   QUESTION_TYPES,
 } from '@/constants/academic';
+import { ROLES } from '@/constants/roles';
 import PageHeader from '@/components/common/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -74,6 +80,8 @@ const toCartItem = (question) => ({
 
 const PaperBuilder = ({ initialPaper = null }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const isOwner = user?.role === ROLES.OWNER;
   const isEdit = Boolean(initialPaper?.id);
   const statusCode = initialPaper?.testStatus?.code || 'DRAFT';
   const isLocked = statusCode !== 'DRAFT';
@@ -88,6 +96,8 @@ const PaperBuilder = ({ initialPaper = null }) => {
   );
   const [classId, setClassId] = useState(initialPaper?.classId || '');
   const [subjectId, setSubjectId] = useState(initialPaper?.subjectId || '');
+  const [selectedSchoolId, setSelectedSchoolId] = useState('');
+  const prevSchoolIdRef = useRef('');
   const [testTypeId, setTestTypeId] = useState(initialPaper?.testTypeId || '');
   const [durationMinutes, setDurationMinutes] = useState(
     initialPaper?.durationMinutes != null
@@ -118,14 +128,30 @@ const PaperBuilder = ({ initialPaper = null }) => {
 
   const isBusy = isCreating || isUpdatingMeta || isReplacing;
 
-  const { data: classesData } = useGetClassesQuery({
-    page: 1,
-    limit: 100,
-    isActive: 'true',
-  });
+  const { data: mySchools = [], isLoading: isSchoolsLoading } =
+    useGetMySchoolsQuery(undefined, { skip: isOwner });
+
+  useEffect(() => {
+    if (isOwner || !mySchools.length || selectedSchoolId) return;
+    setSelectedSchoolId(mySchools[0].id);
+  }, [isOwner, mySchools, selectedSchoolId]);
+
+  const { data: curriculum, isLoading: isCurriculumLoading } =
+    useGetSchoolCurriculumQuery(selectedSchoolId, {
+      skip: isOwner || !selectedSchoolId,
+    });
+
+  const { data: classesData } = useGetClassesQuery(
+    {
+      page: 1,
+      limit: 100,
+      isActive: 'true',
+    },
+    { skip: !isOwner }
+  );
   const { data: subjectsData } = useGetSubjectsQuery(
     { page: 1, limit: 100, classId, isActive: 'true' },
-    { skip: !classId }
+    { skip: isOwner || !classId }
   );
   const { data: tree = [] } = useGetContentTreeQuery(
     { subjectId, isActive: 'true' },
@@ -164,8 +190,20 @@ const PaperBuilder = ({ initialPaper = null }) => {
     { skip: !appliedFilters?.subjectId }
   );
 
-  const classes = classesData?.classes ?? [];
-  const subjects = subjectsData?.subjects ?? [];
+  const classes = isOwner
+    ? (classesData?.classes ?? [])
+    : (curriculum?.classes ?? []);
+
+  const subjects = useMemo(() => {
+    if (isOwner) return subjectsData?.subjects ?? [];
+    return classes.find((item) => item.id === classId)?.subjects ?? [];
+  }, [isOwner, subjectsData?.subjects, classes, classId]);
+
+  const selectedSchool = useMemo(
+    () => mySchools.find((school) => school.id === selectedSchoolId),
+    [mySchools, selectedSchoolId]
+  );
+
   const bankQuestions = bankData?.questions ?? [];
   const bankPagination = bankData?.pagination;
 
@@ -196,6 +234,20 @@ const PaperBuilder = ({ initialPaper = null }) => {
       search: search.trim(),
     });
   };
+
+  useEffect(() => {
+    if (isOwner || !prevSchoolIdRef.current || prevSchoolIdRef.current === selectedSchoolId) {
+      prevSchoolIdRef.current = selectedSchoolId;
+      return;
+    }
+
+    prevSchoolIdRef.current = selectedSchoolId;
+    setClassId('');
+    setSubjectId('');
+    setSelected([]);
+    resetBankDraftFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset bank when school changes
+  }, [selectedSchoolId, isOwner]);
 
   useEffect(() => {
     if (!isEdit) {
@@ -405,6 +457,48 @@ const PaperBuilder = ({ initialPaper = null }) => {
           <CardTitle className="text-base">Paper details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 p-4">
+          {!isOwner && isSchoolsLoading ? (
+            <p className="text-sm text-muted-foreground">Loading your schools…</p>
+          ) : null}
+
+          {!isOwner && !isSchoolsLoading && !mySchools.length ? (
+            <p className="rounded-lg border border-dashed px-3 py-4 text-sm text-muted-foreground">
+              You are not assigned to any school yet. Ask the owner to assign you
+              before building a question paper.
+            </p>
+          ) : null}
+
+          {!isOwner && mySchools.length > 1 ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label>School</Label>
+                <Select
+                  value={selectedSchoolId || undefined}
+                  onValueChange={setSelectedSchoolId}
+                  disabled={isBusy || isLocked || isCurriculumLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select school" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mySchools.map((school) => (
+                      <SelectItem key={school.id} value={school.id}>
+                        {school.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : null}
+
+          {!isOwner && mySchools.length === 1 && selectedSchool ? (
+            <p className="text-sm text-muted-foreground">
+              School:{' '}
+              <span className="font-medium text-heading">{selectedSchool.name}</span>
+            </p>
+          ) : null}
+
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-1.5 sm:col-span-2">
               <Label htmlFor="paper-title">Title</Label>
@@ -421,7 +515,11 @@ const PaperBuilder = ({ initialPaper = null }) => {
               <Select
                 value={classId || undefined}
                 onValueChange={setClassId}
-                disabled={isBusy || isLocked}
+                disabled={
+                  isBusy ||
+                  isLocked ||
+                  (!isOwner && (!selectedSchoolId || isCurriculumLoading))
+                }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select class" />
@@ -434,6 +532,11 @@ const PaperBuilder = ({ initialPaper = null }) => {
                   ))}
                 </SelectContent>
               </Select>
+              {!isOwner && selectedSchoolId && !isCurriculumLoading && !classes.length ? (
+                <p className="text-xs text-muted-foreground">
+                  No classes assigned to this school yet.
+                </p>
+              ) : null}
             </div>
             <div className="space-y-1.5">
               <Label>Subject</Label>

@@ -27,6 +27,12 @@ export const classesApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Classes', id }],
     }),
 
+    getClassesCatalog: builder.query({
+      query: () => ({ url: '/classes/catalog', method: 'GET' }),
+      transformResponse: (response) => response.data.classes,
+      providesTags: [{ type: 'Classes', id: 'CATALOG' }],
+    }),
+
     createClass: builder.mutation({
       query: (body) => ({ url: '/classes', method: 'POST', data: body }),
       transformResponse: (response) => response.data.class,
@@ -59,6 +65,7 @@ export const classesApi = baseApi.injectEndpoints({
 export const {
   useGetClassesQuery,
   useGetClassQuery,
+  useGetClassesCatalogQuery,
   useCreateClassMutation,
   useUpdateClassMutation,
   useDeleteClassMutation,

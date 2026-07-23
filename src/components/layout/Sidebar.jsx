@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Building2,
   FileStack,
   GraduationCap,
   LayoutDashboard,
@@ -48,7 +49,10 @@ const AppSidebar = () => {
         path: getDashboardPath(user?.role),
       },
       ...(user?.role === ROLES.OWNER
-        ? [{ id: 'classes', label: 'Classes', icon: Layers, path: '/classes' }]
+        ? [
+            { id: 'classes', label: 'Classes', icon: Layers, path: '/classes' },
+            { id: 'schools', label: 'Schools', icon: Building2, path: '/schools' },
+          ]
         : []),
       ...(user?.role === ROLES.ADMIN
         ? [{ id: 'admin-classes', label: 'Classes', icon: Layers, path: '/admin/classes' }]

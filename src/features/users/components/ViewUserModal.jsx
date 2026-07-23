@@ -6,7 +6,6 @@ import {
   IdCard,
   Briefcase,
   Mail,
-  MapPin,
   Phone,
   Shield,
   XCircle,
@@ -152,33 +151,48 @@ const ViewUserModal = ({ open, onOpenChange, user = null }) => {
               />
             </div>
 
-            <DetailRow icon={MapPin} label="Address" value={user.address} />
+            <DetailRow
+              icon={IdCard}
+              label="CNIC / National ID"
+              value={user.nationalId}
+            />
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <DetailRow
-                icon={MapPin}
-                label="Postal Code"
-                value={user.postalCode}
-              />
-              <DetailRow
-                icon={IdCard}
-                label="CNIC / National ID"
-                value={user.nationalId}
-              />
-            </div>
+          <div className="space-y-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              School memberships
+            </h4>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <DetailRow
-                icon={Building}
-                label="School Name"
-                value={user.schoolName}
-              />
-              <DetailRow
-                icon={Briefcase}
-                label="Designation in School"
-                value={user.designation}
-              />
-            </div>
+            {!user.schools?.length ? (
+              <p className="text-xs text-muted-foreground">
+                Not assigned to any school yet.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {user.schools.map((membership) => (
+                  <div
+                    key={membership.id}
+                    className="rounded-lg border bg-muted/30 p-3"
+                  >
+                    <div className="flex items-center gap-1.5 text-sm font-medium">
+                      <Building className="h-3.5 w-3.5" />
+                      {membership.school.name}
+                    </div>
+                    {membership.designation ? (
+                      <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <Briefcase className="h-3 w-3" />
+                        {membership.designation}
+                      </p>
+                    ) : null}
+                    {membership.school.address ? (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {membership.school.address}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

@@ -16,6 +16,8 @@ import OwnerDashboard from './pages/OwnerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
+import Schools from './pages/Schools';
+import SchoolDetail from './pages/SchoolDetail';
 import Classes from './pages/Classes';
 import ClassSubjects from './pages/ClassSubjects';
 import SubjectContent from './pages/SubjectContent';
@@ -210,6 +212,22 @@ const AppRoutes = () => (
         element={
           <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
             <Users />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="schools"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <Schools />
+          </RoleBasedRoute>
+        }
+      />
+      <Route
+        path="schools/:schoolId"
+        element={
+          <RoleBasedRoute allowedRoles={[ROLES.OWNER]}>
+            <SchoolDetail />
           </RoleBasedRoute>
         }
       />

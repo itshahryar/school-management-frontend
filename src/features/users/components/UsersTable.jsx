@@ -14,13 +14,9 @@ import {
 import { getDisplayName } from '@/utils/user';
 import { cn } from '@/lib/utils';
 
-const formatDate = (value) => {
-  if (!value) return '—';
-  return new Date(value).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+const formatSchools = (user) => {
+  if (!user?.schools?.length) return '—';
+  return user.schools.map((membership) => membership.school.name).join(', ');
 };
 
 const UsersTableSkeleton = () => (
@@ -120,9 +116,12 @@ const UsersTable = ({
                 {user.role?.toLowerCase()}
               </Badge>
             </TableCell>
-            <TableCell className="hidden lg:table-cell max-w-[150px]">
-              <span className="block truncate text-sm text-muted-foreground" title={user.schoolName || ''}>
-                {user.schoolName || '—'}
+            <TableCell className="hidden lg:table-cell max-w-[180px]">
+              <span
+                className="block truncate text-sm text-muted-foreground"
+                title={formatSchools(user)}
+              >
+                {formatSchools(user)}
               </span>
             </TableCell>
             <TableCell className="hidden text-muted-foreground sm:table-cell">
